@@ -21,9 +21,9 @@ public class ReservationController {
         return reservationService.getReservations();
     }
 
-    @GetMapping(path = "find/id/{reservationId}")
-    public Reservation getReservationById(@PathVariable("reservationId") Long reservationId){
-        return reservationService.getReservationById(reservationId);
+    @GetMapping(path = "find/court_id/{courtId}")
+    public List<Reservation> getReservationById(@PathVariable("courtId") Long courtId){
+        return reservationService.getReservationsById(courtId);
     }
 
     @GetMapping(path = "find/telephone_number/{telephoneNumber}")
@@ -31,9 +31,19 @@ public class ReservationController {
         return reservationService.getReservationsByTelephoneNumber(telephoneNumber);
     }
 
-    @PostMapping(path = "new")
-    public void makeNewReservation(@RequestBody Reservation reservation){
-        reservationService.makeNewReservation(reservation);
+//    @PostMapping(path = "new")
+//    public void makeNewReservation(@RequestBody Reservation reservation){
+//        reservationService.makeNewReservation(reservation);
+//    }
+
+    @PostMapping(path = "{courtId}/new")
+    public void makeNewReservation(
+            @PathVariable("courtId") Long courtId,
+            @RequestBody Reservation reservation
+    ){
+        System.out.print("v post");
+        System.out.println(courtId);
+        reservationService.makeNewReservation(courtId, reservation);
     }
 
     @DeleteMapping(path = "{reservationId}")

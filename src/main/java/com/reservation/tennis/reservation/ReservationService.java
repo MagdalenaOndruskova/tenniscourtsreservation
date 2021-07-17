@@ -1,16 +1,11 @@
 package com.reservation.tennis.reservation;
 
-import com.sun.prism.shader.Solid_TextureYV12_AlphaTest_Loader;
+import com.reservation.tennis.court.Court;
+import com.reservation.tennis.court.CourtRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ReactiveAdapterRegistry;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Month;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -19,46 +14,50 @@ import java.util.Optional;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
+    private final CourtRepository courtRepository;
 
     @Autowired
-    public ReservationService(ReservationRepository reservationRepository) {
+    public ReservationService(ReservationRepository reservationRepository, CourtRepository courtRepository) {
         this.reservationRepository = reservationRepository;
+        this.courtRepository = courtRepository;
     }
 
 
     public List<Reservation> getReservations(){
-//        List<Reservation> reservations = new ArrayList<>();
-//        reservations.add(new Reservation(
-//                1L,
-//                LocalDate.of(2021, Month.APRIL, 15),
-//                LocalTime.of(15, 0),
-//                LocalTime.of(17, 0),
-//                Boolean.TRUE,
-//                20,
-//                "+420777534238",
-//                "Maggie"
-//        )); reservations.add(new Reservation(
-//                2L,
-//                LocalDate.of(2021, Month.APRIL, 16),
-//                LocalTime.of(15, 0),
-//                LocalTime.of(17, 0),
-//                Boolean.TRUE,
-//                20,
-//                "+420777534239",
-//                "Patka"
-//        ));
-//        return reservations;
         return reservationRepository.findAll();
     }
 
-    public void makeNewReservation(Reservation reservation) {
+    public void makeNewReservation(Long courtId, Reservation reservation) {
+        System.out.println("v service ");
+        System.out.println(courtId);
+        System.out.println(courtRepository.findById(courtId)); //todo ci kurt existuje
         System.out.println(reservation);
-//        Optional<Reservation> reservationTelNumber = reservationRepository.
-//                findReservationByTelephoneNumber(reservation.getTelephoneNumber());
+        Optional<Court> court = courtRepository.findById(courtId);
+        if (court.isPresent())
+        {
+            Court courtReservation = court.get();
+            System.out.println(courtReservation);
+            reservation.setCourt(courtReservation);
+        }
+        System.out.println(reservation);
+        List<Reservation> reservationsByTelephone = reservationRepository.findReservationsByTelephoneNumber(reservation.getTelephoneNumber());
 
-//        if (reservationTelNumber.isPresent()){
-//            throw new IllegalStateException("telephone number used");
-//        }
+        // checks if telephoneNumber is not used with different name
+        if (!reservationsByTelephone.isEmpty()){
+            for (Reservation res: reservationsByTelephone
+                 ) {
+                if (!Objects.equals(res.getName(),reservation.getName())){
+                    throw new IllegalStateException("With given telephone number is used different name!");
+                }
+            }
+        }
+
+        // checks if duration of reservation is bigger than 0 - if time given (from, to) was legit
+        if (reservation.getDuration() < 0 ){
+            throw new IllegalStateException("Cant start reservation after its supposed end.");
+        }
+
+//        System.out.println(courtRepository.findById(courtId));
         reservationRepository.save(reservation);
 
     }
@@ -85,9 +84,10 @@ public class ReservationService {
         System.out.println(reservation);
     }
 
-    public Reservation getReservationById(Long reservationId) {
-        return reservationRepository.findById(reservationId).
-                orElseThrow(()-> new IllegalStateException("Reservation with id " + reservationId  + " doesnt exists."));
+    public List<Reservation> getReservationsById(Long courtId) {
+        Court court =  courtRepository.findById(courtId).
+                orElseThrow(()-> new IllegalStateException("Court with id " + courtId  + " doesnt exists."));
+        return  reservationRepository.findReservationsByCourt(court);
     }
 
     public List<Reservation> getReservationsByTelephoneNumber(String telephoneNumber) {

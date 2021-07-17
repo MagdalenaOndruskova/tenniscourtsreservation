@@ -1,5 +1,9 @@
 package com.reservation.tennis.reservation;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.reservation.tennis.court.Court;
+import com.reservation.tennis.surface.Surface;
 import org.apache.tomcat.jni.Local;
 
 import javax.persistence.*;
@@ -35,6 +39,11 @@ public class Reservation {
     private String telephoneNumber;  // todo - mozno iny format?
     private String name;
 
+    @ManyToOne
+    @JoinColumn(name="court_id", nullable = false)
+    @JsonBackReference
+    private Court court;
+
     public Reservation() {
     }
 
@@ -42,34 +51,41 @@ public class Reservation {
                        LocalDate date,
                        LocalTime from,
                        LocalTime to,
+                       Long duration,
                        Boolean typeSingle,
                        Integer price,
                        String telephoneNumber,
-                       String name) {
+                       String name,
+                       Court court) {
         this.id = id;
         this.date = date;
         this.from = from;
         this.to = to;
+        this.duration = duration;
         this.typeSingle = typeSingle;
         this.price = price;
         this.telephoneNumber = telephoneNumber;
         this.name = name;
+        this.court = court;
     }
-
     public Reservation(LocalDate date,
                        LocalTime from,
                        LocalTime to,
+                       Long duration,
                        Boolean typeSingle,
                        Integer price,
                        String telephoneNumber,
-                       String name) {
+                       String name,
+                       Court court) {
         this.date = date;
         this.from = from;
         this.to = to;
+        this.duration = duration;
         this.typeSingle = typeSingle;
         this.price = price;
         this.telephoneNumber = telephoneNumber;
         this.name = name;
+        this.court = court;
     }
 
     public Long getId() {
@@ -130,7 +146,7 @@ public class Reservation {
     }
 
     public Long getDuration() {
-        Long diff = MINUTES.between(to, from);
+        Long diff = MINUTES.between(from, to);
         return diff;
     }
 
@@ -138,16 +154,67 @@ public class Reservation {
         this.duration = duration;
     }
 
+    public LocalTime getFrom() {
+        return from;
+    }
+
+    public LocalTime getTo() {
+        return to;
+    }
+
+    public Court getCourt() {
+        return court;
+    }
+
+    public void setCourt(Court court) {
+        this.court = court;
+    }
+
+//    @Override
+//    public String toString() {
+//        return "Reservation{" +
+//                "id=" + id +
+//                ", date=" + date +
+//                ", from=" + from +
+//                ", to=" + to +
+//                ", duration=" + duration +
+//                ", typeSingle=" + typeSingle +
+//                ", price=" + price +
+//                ", telephoneNumber='" + telephoneNumber + '\'' +
+//                ", name='" + name + '\'' +
+//                '}';
+//    }
+
+
     @Override
     public String toString() {
-        return "Reservation{" +
-                "id=" + id +
-                ", from=" + from +
-                ", to=" + to +
-                ", typeSingle=" + typeSingle +
-                ", price=" + price +
-                ", telephoneNumber='" + telephoneNumber + '\'' +
-                ", name='" + name + '\'' +
-                '}';
+        if (court != null) {
+            return "Reservation{" +
+                    "id=" + id +
+                    ", date=" + date +
+                    ", from=" + from +
+                    ", to=" + to +
+                    ", duration=" + duration +
+                    ", typeSingle=" + typeSingle +
+                    ", price=" + price +
+                    ", telephoneNumber='" + telephoneNumber + '\'' +
+                    ", name='" + name + '\'' +
+                    ", court=" + court.getName() +
+                    '}';
+        }
+        else {
+            return "Reservation{" +
+                    "id=" + id +
+                    ", date=" + date +
+                    ", from=" + from +
+                    ", to=" + to +
+                    ", duration=" + duration +
+                    ", typeSingle=" + typeSingle +
+                    ", price=" + price +
+                    ", telephoneNumber='" + telephoneNumber + '\'' +
+                    ", name='" + name + '\'' +
+                    '}';
+        }
     }
+
 }
