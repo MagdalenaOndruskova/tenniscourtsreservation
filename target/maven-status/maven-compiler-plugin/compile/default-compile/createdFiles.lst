@@ -1,0 +1,11 @@
+com\reservation\tennis\reservation\Reservation.class
+com\reservation\tennis\court\Court.class
+com\reservation\tennis\reservation\ReservationService.class
+com\reservation\tennis\TennisApplication.class
+com\reservation\tennis\surface\Surface.class
+com\reservation\tennis\court\CourtRepository.class
+com\reservation\tennis\court\CourtController.class
+com\reservation\tennis\court\CourtService.class
+com\reservation\tennis\reservation\ReservationController.class
+com\reservation\tennis\reservation\ReservationRepository.class
+com\reservation\tennis\surface\SurfaceRepository.class
