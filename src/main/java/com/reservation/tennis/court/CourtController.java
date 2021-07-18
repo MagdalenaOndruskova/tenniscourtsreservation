@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * Controller for mapping REST endpoints connected to court.
+ */
 @RestController
 @RequestMapping(path = "api/v1/court")
 public class CourtController {
@@ -17,7 +20,10 @@ public class CourtController {
         this.courtService = courtService;
     }
 
-
+    /**
+     * HTTP GET method
+     * @return JSON data of courts stored in database.
+     */
     @GetMapping
     public List<Court> getCourts(){
         List<Court> courts = courtService.getCourts();

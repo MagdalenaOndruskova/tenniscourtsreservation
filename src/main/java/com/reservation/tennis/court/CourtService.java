@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Service for handling court business logic
+ */
 @Service
 public class CourtService {
 
@@ -19,6 +22,10 @@ public class CourtService {
     }
 
 
+    /**
+     * Function finds all courts stored in database
+     * @return list of courts objects
+     */
     public List<Court> getCourts() {
         return courtRepository.findAll();
     }

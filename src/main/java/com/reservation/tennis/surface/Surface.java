@@ -6,6 +6,10 @@ import com.reservation.tennis.court.Court;
 import javax.persistence.*;
 import java.util.Set;
 
+/**
+ * Class for handling table surface, with its construct methods, toString method,
+ * getters and setters and other functions related to surface logic.
+ */
 @Entity
 @Table
 @JsonIdentityInfo(
